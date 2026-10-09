@@ -61,7 +61,7 @@ function workshopOrigin(): string {
   if (process.env.NODE_ENV !== "production") {
     return "http://localhost:3002";
   }
-  return "https://prime-detailer-fs-demo.vercel.app";
+  return "https://app.mydetailos.com";
 }
 
 export function middleware(request: NextRequest) {

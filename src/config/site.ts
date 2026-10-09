@@ -1,6 +1,6 @@
 /** Platform marketing defaults — override via NEXT_PUBLIC_* in each environment. */
-const DEFAULT_WORKSHOP_APP_URL = "https://prime-detailer-fs-demo.vercel.app";
-const DEFAULT_API_URL = "https://prime-detailers-api.onrender.com";
+const DEFAULT_WORKSHOP_APP_URL = "https://app.mydetailos.com";
+const DEFAULT_API_URL = "https://api.mydetailos.com";
 const DEFAULT_SITE_URL = "https://www.mydetailos.com";
 
 /** Normalize a public app origin: trim, require absolute http(s), fix bare hostnames. */
