@@ -365,6 +365,10 @@ export function LoginForm() {
         </Link>
       </p>
 
+      <p className="text-center text-xs leading-5 text-slate-500">
+        Account access uses your login details and browser storage. Read the <Link href="/privacy" className="text-teal-700 underline">Privacy Policy</Link> and <Link href="/cookies" className="text-teal-700 underline">Cookies &amp; Browser Storage</Link> notice.
+      </p>
+
       {error && (
         <Alert tone="error">
           <AlertTitle>Sign in failed</AlertTitle>

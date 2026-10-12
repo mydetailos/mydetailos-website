@@ -6,6 +6,20 @@ jest.mock("next/navigation", () => ({
 }));
 
 describe("signup form", () => {
+  it("requires explicit terms acceptance and links the relevant policies", () => {
+    render(<SignupForm />);
+
+    const acceptance = screen.getByRole("checkbox", { name: /read and accept/i });
+    expect(acceptance).not.toBeChecked();
+    expect(acceptance).toBeRequired();
+    expect(screen.getByRole("link", { name: /terms & conditions/i })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("link", { name: /privacy policy/i })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: /subscription, refund and cancellation/i })).toHaveAttribute("href", "/subscriptions");
+
+    fireEvent.click(acceptance);
+    expect(acceptance).toBeChecked();
+  });
+
   it("validates password confirmation and shows requirements", async () => {
     render(<SignupForm />);
 

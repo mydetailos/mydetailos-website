@@ -234,6 +234,9 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
           >
             {note}
           </p>
+          <p className="mt-3 text-center text-sm leading-6 text-muted-foreground">
+            Review <Link href="/subscriptions" className="text-teal-700 underline underline-offset-4">subscription, refund and cancellation disclosures</Link> and <Link href="/terms" className="text-teal-700 underline underline-offset-4">Terms &amp; Conditions</Link> before purchasing.
+          </p>
         </FadeIn>
       </div>
     </section>

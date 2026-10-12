@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { submitContactPublic } from "@/services/contact";
 import { mapApiError } from "@/lib/error-messages";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ export function ContactForm() {
 
   return (
     <form
+      id="contact-form"
       onSubmit={handleSubmit}
       className="space-y-6 rounded-2xl border border-teal-900/10 bg-white/90 p-7 shadow-lg shadow-teal-900/5 backdrop-blur-sm sm:space-y-7 sm:p-9"
     >
@@ -131,6 +133,10 @@ export function ContactForm() {
           required
         />
       </div>
+
+      <p className="text-sm leading-6 text-slate-600">
+        We use these details to respond to your enquiry and follow up about your workshop needs. Read our <Link href="/privacy" className="font-medium text-teal-700 underline underline-offset-4">Privacy Policy</Link>. Do not include passwords, payment-card details, or customer records in your message.
+      </p>
 
       <div className="pt-1">
         <Button type="submit" size="lg" disabled={isLoading} className="w-full rounded-md sm:w-auto">

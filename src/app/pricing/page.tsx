@@ -14,7 +14,7 @@ export default function PricingPage() {
   return (
     <PageShell
       title="Transparent plans for growing workshops"
-      description="Choose a plan based on branches and users. Pricing below is mock/demo data centralized for easy backend replacement later."
+      description="Compare plans for your workshop. Confirm the selected plan, applicable taxes, and subscription term before purchasing."
       showCta={false}
     >
       <PricingSection compact />

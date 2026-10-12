@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { policyLinks } from "@/data/legal";
 
 export interface MegaMenuItem {
   label: string;
@@ -136,10 +137,9 @@ export const footerNav = {
     { label: "Careers", href: "/contact" },
     { label: "Press and media", href: "/contact" },
     { label: "Investor relations", href: "/contact" },
-    { label: "Legal", href: "/terms" },
-    { label: "Privacy", href: "/privacy" },
-    { label: "Security", href: "/privacy" },
-    { label: "Sitemap", href: "/features" },
+    ...policyLinks,
+    { label: "Security & Data Handling", href: "/privacy" },
+    { label: "Sitemap", href: "/sitemap.xml" },
   ],
   considering: [
     { label: "About MY DETAIL OS", href: "/about" },

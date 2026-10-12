@@ -1,6 +1,7 @@
 /**
  * Compatibility re-exports. Prefer importing from `@/data/*` for new code.
  */
+import { policyLinks } from "@/data/legal";
 export { featureGroups } from "@/data/features";
 export { faqItems } from "@/data/faqs";
 export { pricingPlans } from "@/data/pricing";
@@ -18,8 +19,7 @@ export const publicPages = [
   "/contact",
   "/login",
   "/signup",
-  "/terms",
-  "/privacy",
+  ...policyLinks.map((policy) => policy.href),
   "/demo",
 ] as const;
 

@@ -109,4 +109,4 @@ export const pricingPlans: PricingPlan[] = [
 ];
 
 export const pricingNote =
-  "Prices are synced from the platform admin catalog. GST extra as applicable.";
+  "Indicative fallback prices. Confirm current pricing and applicable GST in checkout or a written quote.";

@@ -77,6 +77,10 @@ export function ForgotPasswordForm() {
         autoComplete="email"
       />
 
+      <p className="text-sm leading-6 text-slate-600">
+        Your email is used to process account recovery. Read our <Link href="/privacy" className="font-medium text-teal-700 underline">Privacy Policy</Link>.
+      </p>
+
       <Button
         type="submit"
         size="lg"

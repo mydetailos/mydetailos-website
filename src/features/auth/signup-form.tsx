@@ -47,6 +47,7 @@ export function SignupForm() {
   const [branchName, setBranchName] = useState("HQ");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [redirectHref, setRedirectHref] = useState<string | null>(null);
@@ -61,6 +62,11 @@ export function SignupForm() {
     event.preventDefault();
     setError(null);
     setRedirectHref(null);
+
+    if (!acceptedTerms) {
+      setError("Please read and accept the Terms & Conditions before creating an account.");
+      return;
+    }
 
     if (passwordMismatch) {
       setError("Password and confirm password must match.");
@@ -248,6 +254,23 @@ export function SignupForm() {
             <p className="text-xs font-medium text-red-600">Passwords do not match.</p>
           )}
         </div>
+      </div>
+
+      <div className="space-y-3 text-sm leading-6 text-slate-600">
+        <label className="flex items-start gap-3" htmlFor="acceptedTerms">
+          <input
+            id="acceptedTerms"
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(event) => setAcceptedTerms(event.target.checked)}
+            required
+            className="mt-1 size-4 shrink-0 accent-teal-600"
+          />
+          <span>I have read and accept the <Link href="/terms" target="_blank" rel="noopener noreferrer" className="font-medium text-teal-700 underline">Terms &amp; Conditions</Link> and am authorised to create this workshop account.</span>
+        </label>
+        <p>
+          We use your details to create and administer your account. Read the <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="font-medium text-teal-700 underline">Privacy Policy</Link> and <Link href="/subscriptions" target="_blank" rel="noopener noreferrer" className="font-medium text-teal-700 underline">subscription, refund and cancellation disclosures</Link> before registering. Terms acceptance is not consent to unrelated marketing.
+        </p>
       </div>
 
       <Button

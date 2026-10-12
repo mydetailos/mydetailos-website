@@ -20,6 +20,8 @@ const RESERVED_FIRST = new Set(
     "faq",
     "privacy",
     "terms",
+    "cookies",
+    "subscriptions",
     "forgot-password",
     "how-it-works",
     "api",

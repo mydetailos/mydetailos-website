@@ -1,25 +1,23 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { policySupportEmail } from "@/data/legal";
 import { ContactForm } from "@/features/contact/contact-form";
 import { FadeIn } from "@/components/ui/fade-in";
 
 const contactChannels = [
   {
-    icon: Phone,
-    title: "Call Sales",
-    primary: "+91 (800) 123-4567",
-    note: "Mon–Fri from 9am to 6pm IST.",
+    icon: MessageSquare,
+    title: "Sales and Support",
+    primary: "Contact our team",
+    note: "Submit your enquiry using the form.",
+    href: "#contact-form",
   },
   {
     icon: Mail,
     title: "Email Support",
-    primary: "support@mydetailos.com",
-    note: "We usually respond within 24 hours.",
-  },
-  {
-    icon: MapPin,
-    title: "Headquarters",
-    primary: "MY DETAIL OS Tech",
-    note: "Bengaluru, Karnataka, India",
+    primary: policySupportEmail,
+    note: "For account, billing, and privacy enquiries.",
+    href: `mailto:${policySupportEmail}`,
   },
 ] as const;
 
@@ -55,7 +53,7 @@ export function ContactSection() {
           <FadeIn delay={0.08} className="mt-10 space-y-4 lg:mt-0">
             <h3 className="text-lg font-semibold text-slate-900">Other ways to reach us</h3>
             <ul className="space-y-3">
-              {contactChannels.map(({ icon: Icon, title, primary, note }) => (
+              {contactChannels.map(({ icon: Icon, title, primary, note, href }) => (
                 <li
                   key={title}
                   className="flex gap-4 rounded-2xl border border-teal-900/8 bg-white/80 p-4 shadow-sm shadow-teal-900/5 backdrop-blur-sm transition-colors hover:border-teal-500/25 hover:bg-white"
@@ -65,7 +63,7 @@ export function ContactSection() {
                   </span>
                   <div className="min-w-0">
                     <p className="font-semibold text-slate-900">{title}</p>
-                    <p className="mt-1 text-sm text-slate-700">{primary}</p>
+                    <Link href={href} className="mt-1 block break-words text-sm text-teal-700 underline underline-offset-4">{primary}</Link>
                     <p className="mt-0.5 text-sm text-slate-500">{note}</p>
                   </div>
                 </li>
