@@ -10,7 +10,8 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
-    pathname === "/forgot-password";
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
 
   // Feature pages have dark hero sections that need to reach the absolute top of the screen
   const isFeaturePage = pathname.startsWith("/features/");
