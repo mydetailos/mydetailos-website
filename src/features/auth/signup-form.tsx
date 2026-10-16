@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
@@ -151,18 +151,16 @@ export function SignupForm() {
     }
   }
 
+  const isVerifyingLock = useRef(false);
+  const otpInputRef = useRef<HTMLInputElement | null>(null);
+
   // Step 2: Verify OTP & Provision Account
-  async function handleVerifySubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function executeSignupVerify(codeToVerify?: string) {
+    const cleanOtp = (codeToVerify ?? otp).replace(/\D/g, "").slice(0, 6);
+    if (cleanOtp.length < 4 || isVerifyingLock.current) return;
+    isVerifyingLock.current = true;
     setError(null);
     setRedirectHref(null);
-
-    const cleanOtp = otp.replace(/\D/g, "");
-    if (cleanOtp.length < 4) {
-      setError("Please enter the verification code sent to your WhatsApp.");
-      return;
-    }
-
     setIsRedirecting(true);
 
     try {
@@ -184,6 +182,7 @@ export function SignupForm() {
       if (!orgSlug) {
         setError("Organization slug was not returned. Please contact support.");
         setIsRedirecting(false);
+        isVerifyingLock.current = false;
         return;
       }
       const dest = workshopAppLoginUrl({
@@ -201,6 +200,7 @@ export function SignupForm() {
           "Workshop app URL is invalid. Set NEXT_PUBLIC_WORKSHOP_APP_URL on Vercel (include https://)."
         );
         setIsRedirecting(false);
+        isVerifyingLock.current = false;
         return;
       }
 
@@ -210,6 +210,7 @@ export function SignupForm() {
           "Workshop app URL is misconfigured (points to localhost). Set NEXT_PUBLIC_WORKSHOP_APP_URL on Vercel."
         );
         setIsRedirecting(false);
+        isVerifyingLock.current = false;
         return;
       }
       if (destUrl.origin === window.location.origin) {
@@ -217,6 +218,7 @@ export function SignupForm() {
           "Workshop app URL points at this marketing site. Set NEXT_PUBLIC_WORKSHOP_APP_URL to the workshop app, then redeploy."
         );
         setIsRedirecting(false);
+        isVerifyingLock.current = false;
         return;
       }
 
@@ -225,7 +227,35 @@ export function SignupForm() {
     } catch (err) {
       setError(mapApiError(err));
       setIsRedirecting(false);
+      isVerifyingLock.current = false;
+      setTimeout(() => {
+        otpInputRef.current?.focus();
+        otpInputRef.current?.select();
+      }, 50);
     }
+  }
+
+  function handleOtpChange(val: string) {
+    const clean = val.replace(/\D/g, "").slice(0, 6);
+    setOtp(clean);
+    if (clean.length === 6) {
+      void executeSignupVerify(clean);
+    }
+  }
+
+  function handleOtpPaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasted) return;
+    setOtp(pasted);
+    if (pasted.length === 6) {
+      void executeSignupVerify(pasted);
+    }
+  }
+
+  async function handleVerifySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await executeSignupVerify();
   }
 
   return (
@@ -460,13 +490,15 @@ export function SignupForm() {
             </div>
 
             <input
+              ref={otpInputRef}
               id="otp"
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
               maxLength={6}
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) => handleOtpChange(e.target.value)}
+              onPaste={handleOtpPaste}
               placeholder="123456"
               autoFocus
               disabled={isRedirecting}

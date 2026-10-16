@@ -194,6 +194,7 @@ export function LoginForm() {
     } catch (err) {
       setError(mapApiError(err));
       setIsRedirecting(false);
+      setOtp("");
     } finally {
       verifyOtpLock.current = false;
     }

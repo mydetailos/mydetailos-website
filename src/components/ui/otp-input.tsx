@@ -28,6 +28,12 @@ export function OtpInput({
     inputsRef.current[0]?.focus();
   }, []);
 
+  useEffect(() => {
+    if (value === "") {
+      inputsRef.current[0]?.focus();
+    }
+  }, [value]);
+
   const commit = (next: string) => {
     const cleaned = next.replace(/\D/g, "").slice(0, length);
     onChange(cleaned);
@@ -86,7 +92,7 @@ export function OtpInput({
 
   return (
     <div
-      className={cn("flex items-center justify-center gap-2.5 sm:gap-3", className)}
+      className={cn("flex items-center justify-center gap-1.5 sm:gap-2.5", className)}
       onPaste={handlePaste}
     >
       {Array.from({ length }).map((_, index) => (
@@ -106,7 +112,7 @@ export function OtpInput({
           onKeyDown={(e) => handleKeyDown(index, e)}
           onFocus={(e) => e.target.select()}
           className={cn(
-            "h-12 w-11 rounded-xl border-2 border-slate-200 bg-white text-center text-xl font-semibold font-mono tabular-nums text-slate-900 sm:h-12 sm:w-12",
+            "h-11 w-10 rounded-xl border-2 border-slate-200 bg-white text-center text-lg font-semibold font-mono tabular-nums text-slate-900 sm:h-12 sm:w-12 sm:text-xl",
             "transition-all focus:border-teal-600 focus:outline-none focus:ring-0",
             disabled && "opacity-50 cursor-not-allowed"
           )}
