@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, Smartphone } from "lucide-react";
 import {
@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/features/shared/alert";
 import { OpeningWorkshopOverlay } from "@/features/auth/opening-workshop-overlay";
 import type { LoginResponse } from "@/api/auth";
 import { apiClient } from "@/lib/api-client";
+import { cn } from "@/lib/utils";
 
 type LoginMethod = "email" | "mobile";
 
@@ -46,6 +47,7 @@ export function LoginForm() {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpHint, setOtpHint] = useState<string | null>(null);
+  const [resendCountdown, setResendCountdown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +55,14 @@ export function LoginForm() {
   const [redirectHref, setRedirectHref] = useState<string | null>(null);
   const setSession = useAuthStore((s) => s.setSession);
   const verifyOtpLock = useRef(false);
+
+  useEffect(() => {
+    if (!otpSent || resendCountdown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [otpSent, resendCountdown]);
 
   async function finishWithSession(session: LoginResponse): Promise<boolean> {
     setSession(session.user, session.accessToken);
@@ -125,7 +135,6 @@ export function LoginForm() {
     setError(null);
     setInfo(null);
     setRedirectHref(null);
-    // Single loader: diamond overlay for the whole handoff (no button spinner).
     setIsRedirecting(true);
 
     try {
@@ -138,6 +147,7 @@ export function LoginForm() {
   }
 
   async function handleSendOtp() {
+    if (resendCountdown > 0 && otpSent) return;
     const digits = mobile.replace(/\D/g, "");
     if (digits.length !== 10) {
       setError("Enter a valid 10-digit mobile number");
@@ -150,18 +160,19 @@ export function LoginForm() {
       const result = await sendLoginOtpPublic(digits);
       setOtp("");
       setOtpSent(true);
-      if (result.delivery === "sms") {
-        setOtpHint("OTP sent to your mobile number.");
-      } else if (result.devDemoCode) {
-        setOtpHint(`Dev/demo code: ${result.devDemoCode}`);
+      setResendCountdown(30);
+      if (result.delivery === "whatsapp") {
+        setOtpHint("OTP sent to your WhatsApp number.");
+      } else if (result.delivery === "sms") {
+        setOtpHint("OTP sent to your mobile number via SMS.");
       } else if (result.hint) {
         setOtpHint(result.hint);
       } else {
-        setOtpHint("OTP ready — check SMS or API logs.");
+        setOtpHint("OTP sent — check WhatsApp or SMS.");
       }
     } catch (err) {
       setError(mapApiError(err));
-      setOtpSent(false);
+      if (!otpSent) setOtpSent(false);
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +180,7 @@ export function LoginForm() {
 
   async function runMobileOtpVerify(code?: string) {
     const digits = (code ?? otp).replace(/\D/g, "");
-    if (digits.length !== 4 || verifyOtpLock.current) return;
+    if ((digits.length !== 6 && digits.length !== 4) || verifyOtpLock.current) return;
     verifyOtpLock.current = true;
     setError(null);
     setInfo(null);
@@ -181,6 +192,7 @@ export function LoginForm() {
     } catch (err) {
       setError(mapApiError(err));
       setIsRedirecting(false);
+      setOtp("");
     } finally {
       verifyOtpLock.current = false;
     }
@@ -196,6 +208,7 @@ export function LoginForm() {
   }
 
   function switchTo(method: LoginMethod) {
+    if (loginMethod === method) return;
     setLoginMethod(method);
     setError(null);
     setInfo(null);
@@ -203,11 +216,41 @@ export function LoginForm() {
     setOtp("");
     setOtpSent(false);
     setOtpHint(null);
+    setResendCountdown(0);
   }
 
   return (
-    <div className="space-y-3.5 sm:space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {isRedirecting ? <OpeningWorkshopOverlay href={redirectHref} /> : null}
+
+      {/* Top Segmented Method Switcher */}
+      <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-100 border border-slate-200 text-sm font-semibold">
+        <button
+          type="button"
+          onClick={() => switchTo("email")}
+          className={cn(
+            "py-2 rounded-lg transition-all text-center",
+            loginMethod === "email"
+              ? "bg-white text-slate-900 shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          )}
+        >
+          Email &amp; Password
+        </button>
+        <button
+          type="button"
+          onClick={() => switchTo("mobile")}
+          className={cn(
+            "py-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
+            loginMethod === "mobile"
+              ? "bg-white text-slate-900 shadow-sm"
+              : "text-slate-600 hover:text-slate-900"
+          )}
+        >
+          <Smartphone className="size-4 text-teal-600" />
+          Mobile OTP
+        </button>
+      </div>
 
       {loginMethod === "email" ? (
         <form onSubmit={handleEmailSubmit} className="space-y-3.5 sm:space-y-5">
@@ -292,24 +335,31 @@ export function LoginForm() {
                   Sending OTP...
                 </>
               ) : (
-                "Send OTP"
+                "Send OTP via WhatsApp"
               )}
             </Button>
           ) : (
             <>
               <div className="space-y-2.5 sm:space-y-3">
                 <div className="flex items-baseline justify-between gap-x-3">
-                  <span className="text-sm font-medium text-slate-600">Enter OTP</span>
-                  <button
-                    type="button"
-                    onClick={() => void handleSendOtp()}
-                    disabled={isLoading || isRedirecting}
-                    className="inline-flex min-h-10 items-center text-sm font-semibold text-teal-700 hover:text-teal-600 disabled:opacity-50"
-                  >
-                    Resend OTP
-                  </button>
+                  <span className="text-sm font-medium text-slate-600">Enter 6-digit OTP</span>
+                  {resendCountdown > 0 ? (
+                    <span className="text-xs font-medium text-slate-400">
+                      Resend OTP in {resendCountdown}s
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void handleSendOtp()}
+                      disabled={isLoading || isRedirecting}
+                      className="inline-flex min-h-10 items-center text-sm font-semibold text-teal-700 hover:text-teal-600 disabled:opacity-50"
+                    >
+                      Resend OTP
+                    </button>
+                  )}
                 </div>
                 <OtpInput
+                  length={6}
                   value={otp}
                   onChange={setOtp}
                   onComplete={(v) => void runMobileOtpVerify(v)}
@@ -324,38 +374,11 @@ export function LoginForm() {
                 disabled={isLoading || isRedirecting || otp.length < 4}
                 className="h-11 w-full rounded-xl bg-teal-600 text-base font-semibold text-white shadow-sm hover:bg-teal-700 sm:h-12"
               >
-                Verify & Sign In
+                Verify &amp; Sign In
               </Button>
             </>
           )}
         </form>
-      )}
-
-      <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs uppercase tracking-wider text-slate-400">or</span>
-        <div className="h-px flex-1 bg-slate-200" />
-      </div>
-
-      {loginMethod === "email" ? (
-        <button
-          type="button"
-          onClick={() => switchTo("mobile")}
-          disabled={isRedirecting}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 sm:h-12"
-        >
-          <Smartphone className="size-4 text-teal-600" />
-          Login with Mobile OTP
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => switchTo("email")}
-          disabled={isRedirecting}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 sm:h-12"
-        >
-          Login with Email
-        </button>
       )}
 
       <p className="text-center text-sm text-slate-600">
@@ -366,7 +389,15 @@ export function LoginForm() {
       </p>
 
       <p className="text-center text-xs leading-5 text-slate-500">
-        Account access uses your login details and browser storage. Read the <Link href="/privacy" className="text-teal-700 underline">Privacy Policy</Link> and <Link href="/cookies" className="text-teal-700 underline">Cookies &amp; Browser Storage</Link> notice.
+        Account access uses your login details and browser storage. Read the{" "}
+        <Link href="/privacy" className="text-teal-700 underline">
+          Privacy Policy
+        </Link>{" "}
+        and{" "}
+        <Link href="/cookies" className="text-teal-700 underline">
+          Cookies &amp; Browser Storage
+        </Link>{" "}
+        notice.
       </p>
 
       {error && (

@@ -36,21 +36,21 @@ export async function login(email: string, password: string): Promise<LoginRespo
 
 export type OtpSendResult = {
   ok: true;
-  delivery?: "sms" | "log_only";
+  delivery?: "whatsapp" | "sms" | "log_only";
   hint?: string;
   /** Present only when SMS is not configured (dev/demo). */
   devDemoCode?: string;
 };
 
-/** Staff login OTP — phone SMS (10 digits). */
-export async function sendLoginOtp(phone: string): Promise<OtpSendResult> {
+/** Staff login OTP — phone WhatsApp or SMS (10 digits). */
+export async function sendLoginOtp(phone: string, channel?: "whatsapp" | "sms"): Promise<OtpSendResult> {
   const digits = phone.replace(/\D/g, "");
   const data = await apiClient.post<{
     ok?: boolean;
-    delivery?: "sms" | "log_only";
+    delivery?: "whatsapp" | "sms" | "log_only";
     hint?: string;
     devDemoCode?: string;
-  }>("/api/auth/otp/send", { phone: digits });
+  }>("/api/auth/otp/send", { phone: digits, ...(channel ? { channel } : {}) });
   return {
     ok: true,
     delivery: data?.delivery,

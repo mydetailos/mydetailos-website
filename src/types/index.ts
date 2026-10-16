@@ -91,6 +91,15 @@ export interface SignupInput {
   referralCode?: string;
   /** Optional plan from pricing CTA (?plan=GROWTH). Defaults to STARTER on API. */
   planCode?: string;
+  /** Verification code (OTP) sent to WhatsApp / mobile */
+  otp: string;
+}
+
+export interface SignupOtpSendResult {
+  ok: boolean;
+  delivery: "whatsapp" | "sms" | "log_only";
+  hint?: string;
+  devDemoCode?: string;
 }
 
 export interface SignupResult {
