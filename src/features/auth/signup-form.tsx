@@ -369,14 +369,14 @@ export function SignupForm() {
           </div>
 
           <div className="space-y-3 text-sm leading-6 text-slate-600">
-            <label className="flex items-start gap-3" htmlFor="acceptedTerms">
+            <label className="flex items-start gap-3 cursor-pointer select-none" htmlFor="acceptedTerms">
               <input
                 id="acceptedTerms"
                 type="checkbox"
                 checked={acceptedTerms}
                 onChange={(event) => setAcceptedTerms(event.target.checked)}
                 required
-                className="mt-1 size-4 shrink-0 accent-teal-600"
+                className="mt-1 size-4 shrink-0 accent-teal-600 cursor-pointer"
               />
               <span>
                 I have read and accept the{" "}
@@ -384,6 +384,7 @@ export function SignupForm() {
                   href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
                   className="font-medium text-teal-700 underline"
                 >
                   Terms &amp; Conditions
@@ -417,8 +418,8 @@ export function SignupForm() {
           <Button
             type="submit"
             size="lg"
-            disabled={isSendingOtp || isRedirecting || passwordMismatch}
-            className="trial-cta mt-0.5 h-11 w-full rounded-xl bg-teal-600 text-base font-semibold text-white hover:bg-teal-500 sm:mt-1 sm:h-12"
+            disabled={!acceptedTerms || isSendingOtp || isRedirecting || passwordMismatch}
+            className="trial-cta mt-0.5 h-11 w-full rounded-xl bg-teal-600 text-base font-semibold text-white hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none sm:mt-1 sm:h-12"
           >
             {isSendingOtp ? (
               <span className="inline-flex items-center justify-center gap-2">
