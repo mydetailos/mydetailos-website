@@ -165,8 +165,6 @@ export function LoginForm() {
         setOtpHint("OTP sent to your WhatsApp number.");
       } else if (result.delivery === "sms") {
         setOtpHint("OTP sent to your mobile number via SMS.");
-      } else if (result.devDemoCode) {
-        setOtpHint(`Dev/demo code: ${result.devDemoCode}`);
       } else if (result.hint) {
         setOtpHint(result.hint);
       } else {

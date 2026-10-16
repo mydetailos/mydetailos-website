@@ -60,7 +60,6 @@ export function SignupForm() {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(30);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
-  const [devDemoCode, setDevDemoCode] = useState<string | null>(null);
 
   // Global submit / navigation state
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -87,7 +86,6 @@ export function SignupForm() {
     event.preventDefault();
     setError(null);
     setSuccessNotice(null);
-    setDevDemoCode(null);
 
     if (!acceptedTerms) {
       setError("Please read and accept the Terms & Conditions before creating an account.");
@@ -115,14 +113,11 @@ export function SignupForm() {
 
     try {
       const tenDigits = phoneDigits.slice(-10);
-      const res = await sendSignupOtpPublic(tenDigits, email.trim());
+      await sendSignupOtpPublic(tenDigits, email.trim());
       setStep("verify");
       setOtp("");
       setResendCountdown(30);
       setSuccessNotice(`Verification code sent to +91 ${tenDigits}`);
-      if (res.devDemoCode) {
-        setDevDemoCode(res.devDemoCode);
-      }
     } catch (err) {
       setError(mapApiError(err));
     } finally {
@@ -138,12 +133,9 @@ export function SignupForm() {
     setIsSendingOtp(true);
     try {
       const phoneDigits = phone.replace(/\D/g, "").slice(-10);
-      const res = await sendSignupOtpPublic(phoneDigits, email.trim());
+      await sendSignupOtpPublic(phoneDigits, email.trim());
       setResendCountdown(30);
       setSuccessNotice(`Verification code sent to +91 ${phoneDigits}`);
-      if (res.devDemoCode) {
-        setDevDemoCode(res.devDemoCode);
-      }
     } catch (err) {
       setError(mapApiError(err));
     } finally {
@@ -500,10 +492,9 @@ export function SignupForm() {
               value={otp}
               onChange={(e) => handleOtpChange(e.target.value)}
               onPaste={handleOtpPaste}
-              placeholder="123456"
               autoFocus
               disabled={isRedirecting}
-              className="block h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-3.5 text-center font-mono text-2xl font-bold tracking-[0.35em] text-slate-900 placeholder:font-normal placeholder:tracking-[0.25em] placeholder:text-slate-300 focus:border-teal-600 focus:outline-none focus:ring-0 disabled:opacity-50"
+              className="block h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-3.5 text-center font-mono text-2xl font-bold tracking-[0.35em] text-slate-900 focus:border-teal-600 focus:outline-none focus:ring-0 disabled:opacity-50"
             />
           </div>
 
@@ -537,12 +528,6 @@ export function SignupForm() {
               Go Back &amp; Edit Info
             </button>
           </div>
-
-          {devDemoCode && (
-            <p className="text-center text-xs text-amber-600 font-mono bg-amber-50 p-2 rounded-lg border border-amber-200">
-              Dev Demo Code: {devDemoCode}
-            </p>
-          )}
 
           {successNotice && (
             <div className="rounded-xl border border-teal-200 bg-teal-50/80 p-3.5 text-xs text-teal-800 flex items-start gap-2.5">
