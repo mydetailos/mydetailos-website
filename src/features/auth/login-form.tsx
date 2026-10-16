@@ -150,14 +150,16 @@ export function LoginForm() {
       const result = await sendLoginOtpPublic(digits);
       setOtp("");
       setOtpSent(true);
-      if (result.delivery === "sms") {
-        setOtpHint("OTP sent to your mobile number.");
+      if (result.delivery === "whatsapp") {
+        setOtpHint("OTP sent to your WhatsApp number.");
+      } else if (result.delivery === "sms") {
+        setOtpHint("OTP sent to your mobile number via SMS.");
       } else if (result.devDemoCode) {
         setOtpHint(`Dev/demo code: ${result.devDemoCode}`);
       } else if (result.hint) {
         setOtpHint(result.hint);
       } else {
-        setOtpHint("OTP ready — check SMS or API logs.");
+        setOtpHint("OTP sent — check WhatsApp or SMS.");
       }
     } catch (err) {
       setError(mapApiError(err));
