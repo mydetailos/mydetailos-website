@@ -22,6 +22,8 @@ const RESERVED_FIRST = new Set(
     "terms",
     "cookies",
     "subscriptions",
+    "subscription-invoice",
+    "public-subscription-invoice",
     "forgot-password",
     "how-it-works",
     "api",

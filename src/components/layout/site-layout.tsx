@@ -7,6 +7,12 @@ import { ScrollToTop } from "@/components/marketing/scroll-to-top";
 
 export function SiteLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isInvoicePage = pathname?.startsWith("/subscription-invoice");
+
+  if (isInvoicePage) {
+    return <main className="flex-1">{children}</main>;
+  }
+
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
