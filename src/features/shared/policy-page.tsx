@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageShell } from "@/features/shared/page-shell";
-import { policyLinks, policySupportEmail } from "@/data/legal";
+import { policyLinks, policySupportEmail, policySupportPhone, policySupportPhoneRaw } from "@/data/legal";
 
 export function PolicyPage({ title, description, children }: {
   title: string;
@@ -22,7 +22,7 @@ export function PolicyPage({ title, description, children }: {
           {children}
           <h2>Contact and publication details</h2>
           <p>
-            Send policy questions or complaints through our <Link href="/contact">contact form</Link> or the published support address, <a href={`mailto:${policySupportEmail}`}>{policySupportEmail}</a>. Include the relevant workshop or account and the nature of your request, but never send passwords, OTPs, or full payment-card details.
+            Send policy questions or complaints through our <Link href="/contact">contact form</Link>, by phone at <a href={`tel:${policySupportPhoneRaw}`}>{policySupportPhone}</a>, or via the published support address, <a href={`mailto:${policySupportEmail}`}>{policySupportEmail}</a>. Include the relevant workshop or account and the nature of your request, but never send passwords, OTPs, or full payment-card details.
           </p>
           <p className="border-l-2 border-amber-500 pl-4 text-sm">
             Pending operator confirmation: the registered legal entity, registered address, applicable registration details, designated grievance officer and contact details, and approved policy effective date have not yet been confirmed for publication. MY DETAIL OS is the product brand, not a verified registered company name. This page does not certify legal compliance.

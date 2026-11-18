@@ -6,3 +6,5 @@ export const policyLinks = [
 ] as const;
 
 export const policySupportEmail = "support@mydetailos.com";
+export const policySupportPhone = "+91 99190 99951";
+export const policySupportPhoneRaw = "+919919099951";

@@ -1,10 +1,18 @@
-import { Mail, MessageSquare } from "lucide-react";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
-import { policySupportEmail } from "@/data/legal";
+import { policySupportEmail, policySupportPhone, policySupportPhoneRaw } from "@/data/legal";
 import { ContactForm } from "@/features/contact/contact-form";
 import { FadeIn } from "@/components/ui/fade-in";
 
 const contactChannels = [
+  {
+    icon: Phone,
+    title: "Call or WhatsApp",
+    primary: policySupportPhone,
+    note: "Mon–Sat from 9:00 AM to 7:00 PM IST.",
+    href: `tel:${policySupportPhoneRaw}`,
+    whatsappHref: `https://wa.me/${policySupportPhoneRaw.replace(/\D/g, "")}`,
+  },
   {
     icon: MessageSquare,
     title: "Sales and Support",
@@ -53,21 +61,42 @@ export function ContactSection() {
           <FadeIn delay={0.08} className="mt-10 space-y-4 lg:mt-0">
             <h3 className="text-lg font-semibold text-slate-900">Other ways to reach us</h3>
             <ul className="space-y-3">
-              {contactChannels.map(({ icon: Icon, title, primary, note, href }) => (
-                <li
-                  key={title}
-                  className="flex gap-4 rounded-2xl border border-teal-900/8 bg-white/80 p-4 shadow-sm shadow-teal-900/5 backdrop-blur-sm transition-colors hover:border-teal-500/25 hover:bg-white"
-                >
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-teal-500/15">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-slate-900">{title}</p>
-                    <Link href={href} className="mt-1 block break-words text-sm text-teal-700 underline underline-offset-4">{primary}</Link>
-                    <p className="mt-0.5 text-sm text-slate-500">{note}</p>
-                  </div>
-                </li>
-              ))}
+              {contactChannels.map((channel) => {
+                const Icon = channel.icon;
+                const whatsappHref = "whatsappHref" in channel ? channel.whatsappHref : undefined;
+                return (
+                  <li
+                    key={channel.title}
+                    className="flex gap-4 rounded-2xl border border-teal-900/8 bg-white/80 p-4 shadow-sm shadow-teal-900/5 backdrop-blur-sm transition-colors hover:border-teal-500/25 hover:bg-white"
+                  >
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-teal-500/15">
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-900">{channel.title}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                        <Link
+                          href={channel.href}
+                          className="block break-words text-sm font-medium text-teal-700 underline underline-offset-4 hover:text-teal-900"
+                        >
+                          {channel.primary}
+                        </Link>
+                        {whatsappHref && (
+                          <a
+                            href={whatsappHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20 transition-colors hover:bg-emerald-100"
+                          >
+                            WhatsApp
+                          </a>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-sm text-slate-500">{channel.note}</p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </FadeIn>
         </div>

@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { submitContactPublic } from "@/services/contact";
 import { mapApiError } from "@/lib/error-messages";
+import { ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { FloatingInput } from "@/components/ui/floating-input";
 import { Label } from "@/components/ui/label";
@@ -47,7 +48,11 @@ export function ContactForm() {
       setPhone("");
       setMessage("");
     } catch (err) {
-      setError(mapApiError(err));
+      if (err instanceof ApiError && err.status === 502 && err.message) {
+        setError(err.message);
+      } else {
+        setError(mapApiError(err));
+      }
     } finally {
       setIsLoading(false);
     }

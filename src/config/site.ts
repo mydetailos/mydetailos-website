@@ -48,6 +48,10 @@ export const siteConfig = {
   ),
   apiUrl: normalizePublicOrigin(process.env.NEXT_PUBLIC_API_URL, DEFAULT_API_URL),
   ogImage: "/og-image.png",
+  phone: "+91 99190 99951",
+  phoneRaw: "+919919099951",
+  whatsappUrl: "https://wa.me/919919099951",
+  supportEmail: "support@mydetailos.com",
   /** Full lockup (emblem + wordmark) — navy plate. */
   logo: "/brand/my-detail-os-logo.png",
   /** Diamond mark only — favicons / compact nav. */

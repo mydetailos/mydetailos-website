@@ -27,6 +27,7 @@ describe("legal policies", () => {
       expect(navigation.getByRole("link", { name: policy.label })).toHaveAttribute("href", policy.href);
     }
     expect(screen.getByRole("link", { name: "support@mydetailos.com" })).toHaveAttribute("href", "mailto:support@mydetailos.com");
+    expect(screen.getByRole("link", { name: "+91 99190 99951" })).toHaveAttribute("href", "tel:+919919099951");
     expect(screen.getByText(/pending operator confirmation:/i)).toBeInTheDocument();
   });
 
